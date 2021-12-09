@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movies Search</title>
+</head>
+<style>
+    #searchbar{
+       width: 40%;
+       height: 30px;
+       margin: auto;
+       margin-bottom: 20px;
+       display: flex;
+    }
+    #name{
+        width: 50%;
+        position: relative;
+        height: 25px;
+    }
+    #btn{
+        width: 15%;
+        height: 30px;
+        background-color: black;
+        color: white;
+        vertical-align: bottom;
+    }
+    #movieDetails{
+        width: 50%;
+        height: 400px;
+        margin: auto;
+        border: 1px solid black;
+        display: flex;
+        
+       
+    }
+    .leftDiv{
+        width: 35%;
+        height: 400px;
+        margin-right: 1%;
+        font-size: 18px;
+        line-height: 20px;
+        box-sizing: border-box;
+        box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+        
+    }
+    .rightDiv{
+      width: 65%;
+     
+    }
+    .leftDiv > img{
+        width: 100%;
+        height:100% ;
+    }
+    .rightDiv > p,h4{
+        margin-top: 6px;
+        margin-bottom: 6px;
+        margin-left: 10px;
+    }
+    .recommend{
+        width: 30%;;
+        font-size: 20px;
+        background-color: brown;
+        color:white;
+        padding: 8px;
+        text-align: center;
+    }
+   
+</style>
+<body>
+    <div id=searchbar>
+        <input type="text" id="name">
+        <button id="btn">search</button>
+    </div>
+   
+
+    <div id="movieDetails">
+
+    </div>
+    <div id="error">
+
+    </div>
+</body>
+</html>
+
+<script>
+    
+    document.getElementById("btn").addEventListener("click", searchByMovieName);
+
+    let mainBox = document.getElementById("movieDetails");
+    
+
+    async function searchByMovieName(query) {
+        let input = document.getElementById("name").value;
+        let key = "d73c712f"
+        let url =`http://www.omdbapi.com/?apikey=${key}&t=${input}`
+        
+     try{
+        const res = await fetch(url);
+        const data = await res.json();
+        console.log("data:", data);
+        if(data.Response == "False"){
+        //   let showerror = document.getElementById("error")
+          
+          let image1 = document.createElement("img");
+          image1.src ="https://c8.alamy.com/comp/W074M2/404-page-not-found-design-template-open-empty-cardboard-box-404-error-page-concept-link-to-non-existing-domain-illustration-W074M2.jpg";
+            image1.style.width = '30%';
+            image1.style.height = '30%';
+            image1.style.margin="100px auto"
+          mainBox.innerHTML = ''
+          mainBox.append(image1);
+          return
+        }else{
+            moviesSearch(data)
+        }
+     }catch(err){
+            console.log("err:", err)
+           
+        }
+             
+    }  
+
+
+    function moviesSearch(movie) {
+        // movies.forEach(function(movie) {
+            let leftDiv = document.createElement("div");
+            leftDiv.setAttribute("class", "leftDiv");
+
+            let rightDiv = document.createElement("div");
+            rightDiv.setAttribute("class", "rightDiv")
+
+            let image = document.createElement("img");
+            image.src = movie.Poster;
+
+            leftDiv.append(image);
+
+            let title = document.createElement("h1");
+            title.innerHTML =`<strong>Title:</strong> ${movie.Title}`;
+
+            let releaseDate = document.createElement("p");
+            releaseDate.innerHTML = `<strong>Released Date:</strong>${movie.Released} `;
+
+            let Director = document.createElement("p");
+            Director.innerHTML = `<strong>Director:</strong> ${movie.Director}`;
+
+            let IMDB = document.createElement("h4");
+            IMDB.innerHTML =`<strong>IMDB Rating:</strong> ${movie.imdbRating}`;
+
+            let Actor = document.createElement("p");
+            Actor.innerHTML =`<strong>Actors:</strong> ${movie.Actors}`;
+
+            if(movie.imdbRating > 8){
+                console.log(movie.imdbRating )
+                recommended = document.createElement("p");
+
+                recommended.setAttribute("class","recommend")
+                recommended.textContent ="Recommended";
+                rightDiv.append(recommended)
+                
+            }
+
+            rightDiv.append(title,releaseDate,Director,IMDB,Actor);
+
+           
+            mainBox.innerHTML = "";
+            mainBox.append(leftDiv,rightDiv)
+        // });
+    }
+
+    //searchByMovieName()
+</script>
